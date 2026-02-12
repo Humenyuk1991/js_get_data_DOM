@@ -1,23 +1,33 @@
 'use strict';
 
 const populationSpans = document.querySelectorAll('.population');
-const populations = Array.from(populationSpans).map((span) => {
-  const text = span.textContent.trim();
-  const number = Number(text.replace(/,/g, ''));
+const parsedNumbers = Array.from(populationSpans).map(span => {
+    const rawText = span.textContent.trim();
 
-  return number;
-});
+   
+    const cleaned = rawText.replace(/,/g, '');
 
-const total = populations.reduce((sum, value) => sum + value, 0);
+    const number = Number(cleaned);
 
-const average = total / populations.length;
+    return number;
+  });
 
-function formatNumber(num) {
-  return num.toLocaleString();
-}
+  
+  const validNumbers = parsedNumbers.filter(n => Number.isFinite(n));
 
-document.querySelector('.total-population').textContent = formatNumber(total);
+ 
+  const total = validNumbers.reduce((sum, value) => sum + value, 0);
 
-document.querySelector('.average-population').textContent = formatNumber(
-  Math.round(average),
-);
+
+  const average = validNumbers.length > 0
+    ? total / validNumbers.length
+    : 0;
+
+ 
+  const formatter = new Intl.NumberFormat('en-US');
+
+  document.querySelector('.total-population').textContent =
+    formatter.format(total);
+
+  document.querySelector('.average-population').textContent =
+    formatter.format(Math.round(average));
